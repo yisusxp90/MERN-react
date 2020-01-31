@@ -45,7 +45,6 @@ const FormTarea = () => {
 
     const onSubmit = e => {
         e.preventDefault();
-        console.log(nombre);
         if(nombre.trim() === ''){
             validarTarea(true);
             return;
@@ -54,15 +53,14 @@ const FormTarea = () => {
         // si es edicion o es nueva tarea
         if(tareaSeleccionada === null){
             // tarea nueva
-            tarea.proyectoId = proyectoActualSeleccionado.id;
-            tarea.state = false;
+            tarea.proyecto = proyectoActualSeleccionado._id;
             agregarTarea(tarea);
         }else{
             actualizarTarea(tarea);
         }
 
         //obtener y fltrar las tareas del proyecto actual
-        obtenerTareas(proyectoActualSeleccionado.id);
+        obtenerTareas(proyectoActualSeleccionado._id);
         guardarTarea({
             nombre: ''
         });

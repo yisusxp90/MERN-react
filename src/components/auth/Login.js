@@ -1,6 +1,28 @@
-import React, {useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
-const Login = () => {
+import AlertaContext from "../../context/alertas/alertaContext";
+import AuthContext from "../../context/autenticacion/authContext";
+
+const Login = (props) => {
+
+    // extraemos lo enviado en el alertaState a traves del alertaContext.js
+    const alertaContext = useContext(AlertaContext);
+    const {alerta, mostrarAlerta} = alertaContext;
+
+    // extraemos lo enviado en el authState a traves del authContext.js
+    const authContext = useContext(AuthContext);
+    const {iniciarSesion, mensaje, autenticado} = authContext;
+
+    // en caso de que el password o usuario no existe
+    useEffect(() => {
+        if(autenticado){
+            props.history.push('/proyectos');
+        }
+        if(mensaje){
+            mostrarAlerta(mensaje.msg, mensaje.categoria);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mensaje, autenticado, props.history]);
 
     const [usuario, guardarUsuario] = useState({
         email: '',
@@ -18,8 +40,14 @@ const Login = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        if(email.trim() === '' || password.trim() === '') return;
-
+        if(email.trim() === '' || password.trim() === '') {
+            mostrarAlerta('Todos los campos son obligatorios', 'alerta-error');
+            return;
+        }
+        iniciarSesion({
+            email,
+            password
+        });
     };
 
     return (
@@ -58,6 +86,7 @@ const Login = () => {
                 <Link to={'/nueva-cuenta'} className="enlace-cuenta">
                     Obtener Cuenta
                 </Link>
+                {alerta ? (<div className={`alerta ${alerta.categoria}`}>{alerta.msg}</div> ) : null}
             </div>
         </div>
     );
